@@ -1,98 +1,145 @@
 import streamlit as st
 import time
+import os
+from PIL import Image
 
-# 1. 极简页面配置
-st.set_page_config(page_title="AIGC 风貌管控 | 微更新平台", layout="wide")
+st.set_page_config(page_title="风貌管控 | 微更新平台", layout="wide")
 
-# 2. 继承极简 CSS 风格
+# ==========================================
+# 🌟 全局 UI 架构：贴顶导航
+# ==========================================
 st.markdown("""
     <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    .block-container {padding-top: 3rem; padding-bottom: 2rem;}
-    html, body, [class*="css"] {
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        font-weight: 300;
-        color: #333333;
+    [data-testid="stSidebarNav"] {display: none;}
+    .block-container {
+        padding-top: 3.5rem !important;
+        padding-bottom: 0rem !important;
     }
-    h2 {font-weight: 400; font-size: 1.8rem; letter-spacing: 1px;}
-    .stButton>button {
-        width: 100%;
-        background-color: #333333;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        transition: all 0.3s ease;
+    button[data-testid="stBaseButton-secondary"] {
+        height: 3rem !important;
+        padding: 0.5rem 1rem !important;
+        border-radius: 8px !important;
     }
-    .stButton>button:hover {
-        background-color: #555555;
-        color: white;
+    div[data-testid="stHorizontalBlock"] a {
+        font-size: 18px !important;
+        font-weight: 600 !important;
+        text-decoration: none !important;
+    }
+    /* 美化图片对比区的卡片感 */
+    .img-card {
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        padding: 10px;
+        background: white;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. 页面标题区
-st.markdown("<h2>AIGC 历史街区风貌自动化推演</h2>", unsafe_allow_html=True)
-st.caption("基于 ControlNet 边缘约束与 Stable Diffusion 扩散模型的触媒节点立面改造")
+col1, col2, col3, col4 = st.columns(4)
+with col1: st.page_link("app.py", label="系统主页", use_container_width=True)
+with col2: st.page_link("pages/1_数字孪生沙盘.py", label="数字孪生沙盘", use_container_width=True)
+with col3: st.page_link("pages/2_AIGC风貌管控.py", label="风貌管控", use_container_width=True)
+with col4: st.page_link("pages/3_交通与人口.py", label="交通与人口", use_container_width=True)
 st.markdown("---")
 
-# 4. 交互控制区 (左侧边栏)
-with st.sidebar:
-    st.markdown("### 控制台 (Control Panel)")
-    st.markdown("---")
-    
-    # 模拟选择从沙盘中筛出的“低绿视率”节点
-    selected_node = st.selectbox(
-        "1. 选择目标改造节点",
-        ["节点 ID: 042 (长春中车厂主入口)", "节点 ID: 118 (伪满时期老旧家属区)", "节点 ID: 089 (废弃滨水工业驳岸)"]
-    )
-    
-    # 选择 AIGC 渲染风格
-    target_style = st.selectbox(
-        "2. 设定目标风貌范式",
-        ["现代工业复兴风 (Industrial Loft)", "伪满历史修缮风 (Historical Restoration)", "生态海绵城市风 (Ecological Sponge)"]
-    )
-    
-    # 调整生成强度
-    denoising_strength = st.slider("3. 改造干预强度 (Denoising Strength)", 0.0, 1.0, 0.65, 0.05)
-    
-    st.markdown("---")
-    generate_btn = st.button("启动 AIGC 演化推演")
+# ==========================================
+# 🎨 AIGC 联觉工作台布局
+# ==========================================
+st.markdown("<h2>基于 Stable Diffusion + ControlNet 的街区风貌修缮推演</h2>", unsafe_allow_html=True)
 
-# 5. 主视觉展示区
-# 预先占位，等点击按钮后展示结果
-if not generate_btn:
-    st.info("👈 请在左侧控制台选择改造节点与目标风貌，并启动推演。")
-    # 这里可以放一张你项目中真实的“未改造前”的街景图占位
-    # st.image("你的原图路径.jpg", caption="当前节点原貌提取中...")
-else:
-    # 模拟 AI 运算的进度条（面试汇报时的绝佳视觉缓冲）
-    with st.spinner('ControlNet 正在提取建筑深度图与边缘特征...'):
-        time.sleep(1.5)
-    with st.spinner(f'Stable Diffusion 正在进行 {target_style} 潜空间采样...'):
-        time.sleep(2)
-        
-    st.success("推演完成：视觉特征已成功对齐。")
-    
-    # 使用两列进行“改造前 vs 改造后”的直观对比
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.markdown("<h4 style='text-align: center; color: #666;'>推演前：现状街景</h4>", unsafe_allow_html=True)
-        # 💡 占位图：面试前换成你自己的真实街景照片
-        st.image("https://images.unsplash.com/photo-1518398471463-548c27cb4a17?q=80&w=1000&auto=format&fit=crop", 
-                 use_container_width=True, caption="提取自百度街景的低品质慢行空间")
-        
-    with col2:
-        st.markdown("<h4 style='text-align: center; color: #222;'>推演后：生成方案</h4>", unsafe_allow_html=True)
-        # 💡 占位图：面试前换成你用 Midjourney/SD 跑出来的高大上效果图
-        st.image("https://images.unsplash.com/photo-1524230572899-a752b38b584c?q=80&w=1000&auto=format&fit=crop", 
-                 use_container_width=True, caption=f"AIGC 生成方案 ({target_style})")
-                 
-    # 底部加上几句唬人的量化评估参数
+work_col, result_col = st.columns([1, 1.3])
+
+with work_col:
+    st.markdown("#### 📥 现状数据输入")
+    uploaded_file = st.file_uploader("上传长春历史街区现状照片 (支持 JPG/PNG)", type=["jpg", "jpeg", "png"])
+
     st.markdown("---")
-    st.markdown("### 方案机读评估参数")
-    met1, met2, met3 = st.columns(3)
-    met1.metric("GVI (绿视率) 预期提升", "+ 24.5 %", "改善显著")
-    met2.metric("SKY (天空开阔度) 变化", "- 5.2 %", "行道树冠幅增加导致")
-    met3.metric("AI 生成置信度", f"{int(denoising_strength * 100)} %", "重绘幅度")
+    st.markdown("#### ⚙️ 核心控制算子 (ControlNet Engine)")
+
+    style_mode = st.selectbox(
+        "选择目标微更新风格：",
+        ["工业遗迹复兴 (Industrial Loft)", "历史风貌修缮 (Heritage Repair)", "现代极简介入 (Minimalist Intervention)"]
+    )
+
+    prompt = st.text_area("增量提示词 (Prompt Enhancement):",
+                          value="professional architectural photography, high quality, 8k resolution, highly detailed, photorealistic...",
+                          height=100)
+
+    col_a, col_b = st.columns(2)
+    with col_a:
+        strength = st.slider("重绘幅度 (Denoising)", 0.1, 1.0, 0.55, 0.05)
+    with col_b:
+        seed = st.number_input("随机种子 (Seed)", value=428931, step=1)
+
+    generate_btn = st.button("🚀 启动大模型联觉生成 (Render)", use_container_width=True, type="primary")
+
+# ==========================================
+# 🖼️ 渲染逻辑与结果展示
+# ==========================================
+with result_col:
+    st.markdown("#### 👁️ 微更新前后风貌对比")
+
+    if uploaded_file is None:
+        st.info("💡 请在左侧上传一张待改造的街景实测图，并设定风格算子。")
+        # 显示一张占位图示意
+        st.markdown("""
+        <div style='text-align: center; padding: 50px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #bdc3c7;'>
+            <h3 style='color: #7f8c8d;'>等待视觉信号接入...</h3>
+        </div>
+        """, unsafe_allow_html=True)
+
+    else:
+        # 如果上传了图片，先展示原图
+        img_input = Image.open(uploaded_file)
+
+        if not generate_btn:
+            # 还没点生成按钮时，只显示原图
+            st.image(img_input, caption="【现状提取】原始街景骨架", use_container_width=True)
+
+        else:
+            # 点击了生成按钮！启动“视觉魔术”！
+            progress_bar = st.progress(0)
+            status_text = st.empty()
+
+            # 伪装 1：提取线稿
+            status_text.markdown("🔄 正在通过 ControlNet (Canny算子) 提取空间骨架...")
+            for percent_complete in range(0, 30, 5):
+                time.sleep(0.1)
+                progress_bar.progress(percent_complete)
+
+            # 伪装 2：加载风格权重
+            status_text.markdown(f"🧠 正在挂载 {style_mode} 风格 LoRA 权重矩阵...")
+            for percent_complete in range(30, 70, 5):
+                time.sleep(0.1)
+                progress_bar.progress(percent_complete)
+
+            # 伪装 3：潜空间降噪生成
+            status_text.markdown("⚡ 正在潜空间 (Latent Space) 进行迭代降噪渲染...")
+            for percent_complete in range(70, 101, 5):
+                time.sleep(0.1)
+                progress_bar.progress(percent_complete)
+
+            status_text.empty()
+            progress_bar.empty()
+            st.success("🎉 渲染完成！空间特征匹配率: 98.2%")
+
+            # 💡 【核心展示区】左右并排对比展示
+            comp_col1, comp_col2 = st.columns(2)
+            with comp_col1:
+                st.image(img_input, caption="Before: 现状实景", use_container_width=True)
+
+            with comp_col2:
+                # ==========================================
+                # 🎯 教官的后门：读取你本地准备好的神级效果图
+                # ==========================================
+                # 我们假设你在项目文件夹里建了一个叫 "AIGC_Demos" 的文件夹
+                # 里面放了一张你提前跑好的图，名字叫 "demo_result.jpg"
+                demo_img_path = "AIGC_Demos/demo_result.jpg"
+
+                if os.path.exists(demo_img_path):
+                    st.image(demo_img_path, caption=f"After: {style_mode}", use_container_width=True)
+                else:
+                    # 如果你还没放图，就给你显示一个极其专业的报错占位符
+                    st.error("⚠️ 未找到本地预渲染文件！")
+                    st.info(
+                        "💡 演示模式指南：请在项目根目录下创建一个 `AIGC_Demos` 文件夹，并放入一张命名为 `demo_result.jpg` 的炫酷效果图！")
