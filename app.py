@@ -1,7 +1,7 @@
 import streamlit as st
 
 # 🌟 强制隐藏侧边栏，设定宽屏模式
-st.set_page_config(page_title="长春微更新决策平台", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(page_title="系统主页", layout="wide", initial_sidebar_state="collapsed")
 
 # ==========================================
 # 🎨 必须带 unsafe_allow_html=True 的全局 CSS

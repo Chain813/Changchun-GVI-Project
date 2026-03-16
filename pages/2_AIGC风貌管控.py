@@ -4,15 +4,25 @@ import os
 from PIL import Image
 
 st.set_page_config(page_title="风貌管控 | 微更新平台", layout="wide")
+# 🌟 核心修复：强制侧边栏在子页面加载时就是展开的
+st.set_page_config(page_title="子模块", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
 # 🌟 全局 UI 架构：贴顶导航
 # ==========================================
 st.markdown("""
     <style>
-    /* 1. 彻底炸毁原生顶栏和侧边栏导航 */
+    /* 1. 炸毁顶栏 (没问题，继续炸) */
     [data-testid="stHeader"] {display: none !important;}
+    
+    /* 2. 只炸毁侧边栏里面的“页面导航菜单”，保留侧边栏本身用来放滑块 */
     [data-testid="stSidebarNav"] {display: none !important;}
+    
+    /* 3. 强制显示侧边栏，防止它被意外收起 */
+    [data-testid="stSidebar"] {
+        display: flex !important;
+        visibility: visible !important;
+    }
 
     /* 2. 极致贴顶 */
     .block-container { padding-top: 1rem !important; padding-bottom: 0rem !important;}
