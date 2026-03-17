@@ -7,7 +7,7 @@ import sys  # 引入 sys 用于强制熔断程序
 # ==========================================
 # 1. 核心参数配置
 # ==========================================
-AK = "4g5ssnlitP2PFENyvorHsuMhyGdWNkQk"  # <--- 必须填入你的真实AK
+AK = "你的ak"  # <--- 必须填入你的真实AK
 INPUT_EXCEL = r"C:\Users\23902\ultimateDESIGN\Changchun_Precise_Points.xlsx"
 SAVE_DIR = r"C:\Users\23902\ultimateDESIGN\StreetViews"
 
