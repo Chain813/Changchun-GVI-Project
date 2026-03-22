@@ -41,13 +41,10 @@ div[data-baseweb="select"] > div, textarea, input, section[data-testid="stFileUp
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# 🧭 顶部导航栏
-# ==========================================
 col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 with col1: st.page_link("app.py", label="🏠 系统主页", use_container_width=True)
 with col2: st.page_link("pages/1_数字孪生沙盘.py", label="🌳 数字孪生沙盘", use_container_width=True)
-with col3: st.page_link("pages/2_AIGC 风貌管控.py", label="🎨 风貌管控", use_container_width=True)
+with col3: st.page_link("pages/2_AIGC风貌管控.py", label="🎨 AIGC风貌管控", use_container_width=True) # 🚨 空格已拔除
 with col4: st.page_link("pages/3_交通与人口.py", label="🚥 交通与人口", use_container_width=True)
 with col5: st.page_link("pages/4_数据管理中心.py", label="📊 数据管理", use_container_width=True)
 with col6: st.page_link("pages/5_LLM 情感分析.py", label="💬 情感分析", use_container_width=True)
