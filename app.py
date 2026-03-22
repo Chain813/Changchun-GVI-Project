@@ -57,11 +57,14 @@ st.markdown("""
 # ==========================================
 # 🧭 顶部导航栏
 # ==========================================
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
 with col1: st.page_link("app.py", label="🏠 系统主页", use_container_width=True)
 with col2: st.page_link("pages/1_数字孪生沙盘.py", label="🌳 数字孪生沙盘", use_container_width=True)
-with col3: st.page_link("pages/2_AIGC风貌管控.py", label="🎨 风貌管控", use_container_width=True)
+with col3: st.page_link("pages/2_AIGC 风貌管控.py", label="🎨 风貌管控", use_container_width=True)
 with col4: st.page_link("pages/3_交通与人口.py", label="🚥 交通与人口", use_container_width=True)
+with col5: st.page_link("pages/4_数据管理中心.py", label="📊 数据管理", use_container_width=True)
+with col6: st.page_link("pages/5_LLM 情感分析.py", label="💬 情感分析", use_container_width=True)
+with col7: st.page_link("pages/6_数据总览.py", label="📋 数据总览", use_container_width=True)
 
 # ==========================================
 # 🏠 顶部主视觉区
@@ -83,7 +86,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🚀 中部：三大子系统入口
+# 🚀 中部：五大子系统入口
 # ==========================================
 st.markdown("### 🧭 核心子系统导览 (点击进入)")
 c1, c2, c3 = st.columns(3)
@@ -107,7 +110,7 @@ with c2:
     st.markdown(
         "<p style='color:#cbd5e1 !important; font-size:0.95rem; height: 45px;'>基于 Stable Diffusion + ControlNet 的工业遗产风貌修缮与沉浸式推演。</p>",
         unsafe_allow_html=True)
-    st.page_link("pages/2_AIGC风貌管控.py", label="🚀 启动大模型引擎", use_container_width=True)
+    st.page_link("pages/2_AIGC 风貌管控.py", label="🚀 启动大模型引擎", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 with c3:
@@ -119,6 +122,31 @@ with c3:
         "<p style='color:#cbd5e1 !important; font-size:0.95rem; height: 45px;'>商业活力潮汐聚类与多模态公共交通路网的高通量空间耦合分析。</p>",
         unsafe_allow_html=True)
     st.page_link("pages/3_交通与人口.py", label="🚀 启动交通探针", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+st.markdown("<br>", unsafe_allow_html=True)
+c4, c5 = st.columns(2)
+
+with c4:
+    st.markdown('<div class="module-card">', unsafe_allow_html=True)
+    st.image("https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=800&auto=format&fit=crop",
+             use_container_width=True)
+    st.markdown("#### 📊 模块 4：数据管理中心")
+    st.markdown(
+        "<p style='color:#cbd5e1 !important; font-size:0.95rem; height: 45px;'>多源数据融合管理、上传更新与可视化分析的一站式平台。</p>",
+        unsafe_allow_html=True)
+    st.page_link("pages/4_数据管理中心.py", label="🚀 进入数据中心", use_container_width=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+
+with c5:
+    st.markdown('<div class="module-card">', unsafe_allow_html=True)
+    st.image("https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=800&auto=format&fit=crop",
+             use_container_width=True)
+    st.markdown("#### 💬 模块 5：LLM 情感分析")
+    st.markdown(
+        "<p style='color:#cbd5e1 !important; font-size:0.95rem; height: 45px;'>基于大模型的社会情感计算、舆情热力图与智能决策建议。</p>",
+        unsafe_allow_html=True)
+    st.page_link("pages/5_LLM 情感分析.py", label="🚀 启动情感分析", use_container_width=True)
     st.markdown('</div>', unsafe_allow_html=True)
 
 # ==========================================

@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import pydeck as pdk
 import os
+import numpy as np
+import math
 
-st.set_page_config(page_title="交通与人口 | 微更新平台", layout="wide")
-# 🌟 核心修复：强制侧边栏在子页面加载时就是展开的
 st.set_page_config(page_title="子模块", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
@@ -12,65 +12,72 @@ st.set_page_config(page_title="子模块", layout="wide", initial_sidebar_state=
 # ==========================================
 st.markdown("""
     <style>
-    /* 1. 炸毁顶栏 (没问题，继续炸) */
     [data-testid="stHeader"] {display: none !important;}
-    
-    /* 2. 只炸毁侧边栏里面的“页面导航菜单”，保留侧边栏本身用来放滑块 */
     [data-testid="stSidebarNav"] {display: none !important;}
-    
-    /* 3. 强制显示侧边栏，防止它被意外收起 */
-    [data-testid="stSidebar"] {
-        display: flex !important;
-        visibility: visible !important;
-    }
-    /* 2. 极致贴顶 */
+    [data-testid="stSidebar"] { display: flex !important; visibility: visible !important; }
     .block-container { padding-top: 1rem !important; padding-bottom: 0rem !important;}
-
-    /* 3. 完美的悬浮导航栏 */
     a[data-testid="stPageLink-NavLink"] {
-        background-color: rgba(255, 255, 255, 0.1) !important;
-        border: 1px solid rgba(255, 255, 255, 0.2) !important;
-        border-radius: 8px !important; padding: 0.6rem 1rem !important;
-        display: flex !important; justify-content: center !important;
+        background-color: rgba(255, 255, 255, 0.1) !important; border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        border-radius: 8px !important; padding: 0.6rem 1rem !important; display: flex !important; justify-content: center !important;
         text-decoration: none !important; transition: all 0.3s ease !important;
     }
-    a[data-testid="stPageLink-NavLink"]:hover {
-        background-color: rgba(255, 255, 255, 0.25) !important;
-        border-color: rgba(255, 255, 255, 0.5) !important; transform: translateY(-2px);
-    }
-    a[data-testid="stPageLink-NavLink"] p, a[data-testid="stPageLink-NavLink"] span {
-        font-size: 18px !important; font-weight: 600 !important; color: #f8fafc !important; margin: 0 !important;
-    }
-
-    /* 4. 全局暗黑模式 */
+    a[data-testid="stPageLink-NavLink"]:hover { background-color: rgba(255, 255, 255, 0.25) !important; border-color: rgba(255, 255, 255, 0.5) !important; transform: translateY(-2px); }
+    a[data-testid="stPageLink-NavLink"] p, a[data-testid="stPageLink-NavLink"] span { font-size: 18px !important; font-weight: 600 !important; color: #f8fafc !important; margin: 0 !important; }
     .stApp { background-color: #0f172a; }
     h1, h2, h3, h4, h5, label, .stMarkdown p { color: #f8fafc !important; }
-
-    /* 🌟 5. 核心修复：侧边栏暴力变白！ */
     [data-testid="stSidebar"] { background-color: #1e293b !important; border-right: 1px solid #334155 !important; }
-    /* 用 * 号强行让侧边栏里所有的字（滑块数值、勾选框等）全部变成极光白！ */
     [data-testid="stSidebar"] * { color: #f8fafc !important; }
-
-    /* 6. 其他组件暗黑化 */
-    div[data-baseweb="select"] > div, textarea, input, section[data-testid="stFileUploader"] {
-        background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #475569 !important;
-    }
+    div[data-baseweb="select"] > div, textarea, input, section[data-testid="stFileUploader"] { background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #475569 !important; }
     [data-testid="stMetricValue"], [data-testid="stMetricLabel"] { color: #f8fafc !important; }
-
-    /* 7. 地图巨幕高度 */
     [data-testid="stDeckGlJsonChart"] { height: 75vh !important; min-height: 650px !important; }
     </style>
     """, unsafe_allow_html=True)
 
 # 顶部导航
-col1, col2, col3, col4 = st.columns(4)
-with col1: st.page_link("app.py", label="系统主页", use_container_width=True)
-with col2: st.page_link("pages/1_数字孪生沙盘.py", label="数字孪生沙盘", use_container_width=True)
-with col3: st.page_link("pages/2_AIGC风貌管控.py", label="风貌管控", use_container_width=True)
-with col4: st.page_link("pages/3_交通与人口.py", label="交通与人口", use_container_width=True)
+col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
+with col1: st.page_link("app.py", label="🏠 系统主页", use_container_width=True)
+with col2: st.page_link("pages/1_数字孪生沙盘.py", label="🌳 数字孪生沙盘", use_container_width=True)
+with col3: st.page_link("pages/2_AIGC 风貌管控.py", label="🎨 风貌管控", use_container_width=True)
+with col4: st.page_link("pages/3_交通与人口.py", label="🚥 交通与人口", use_container_width=True)
+with col5: st.page_link("pages/4_数据管理中心.py", label="📊 数据管理", use_container_width=True)
+with col6: st.page_link("pages/5_LLM 情感分析.py", label="💬 情感分析", use_container_width=True)
+with col7: st.page_link("pages/6_数据总览.py", label="📋 数据总览", use_container_width=True)
 st.markdown("---")
-
 st.markdown("<h2>历史街区交通枢纽与商业活力耦合分析</h2>", unsafe_allow_html=True)
+
+
+# ==========================================
+# 🗺️ 核心算法：百度坐标 (BD-09) 转 WGS-84 解密引擎
+# ==========================================
+def bd09_to_wgs84(bd_lon, bd_lat):
+    x_pi, pi = 3.14159265358979324 * 3000.0 / 180.0, 3.1415926535897932384626
+    a, ee = 6378245.0, 0.00669342162296594323
+    x, y = bd_lon - 0.0065, bd_lat - 0.006
+    z = math.sqrt(x * x + y * y) - 0.00002 * math.sin(y * x_pi)
+    theta = math.atan2(y, x) - 0.000003 * math.cos(x * x_pi)
+    gcj_lon, gcj_lat = z * math.cos(theta), z * math.sin(theta)
+
+    def transformlat(lng, lat):
+        ret = -100.0 + 2.0 * lng + 3.0 * lat + 0.2 * lat * lat + 0.1 * lng * lat + 0.2 * math.sqrt(abs(lng))
+        ret += (20.0 * math.sin(6.0 * lng * pi) + 20.0 * math.sin(2.0 * lng * pi)) * 2.0 / 3.0
+        ret += (20.0 * math.sin(lat * pi) + 40.0 * math.sin(lat / 3.0 * pi)) * 2.0 / 3.0
+        ret += (160.0 * math.sin(lat / 12.0 * pi) + 320 * math.sin(lat * pi / 30.0)) * 2.0 / 3.0
+        return ret
+
+    def transformlng(lng, lat):
+        ret = 300.0 + lng + 2.0 * lat + 0.1 * lng * lng + 0.1 * lng * lat + 0.1 * math.sqrt(abs(lng))
+        ret += (20.0 * math.sin(6.0 * lng * pi) + 20.0 * math.sin(2.0 * lng * pi)) * 2.0 / 3.0
+        ret += (20.0 * math.sin(lng * pi) + 40.0 * math.sin(lng / 3.0 * pi)) * 2.0 / 3.0
+        ret += (150.0 * math.sin(lng / 12.0 * pi) + 300.0 * math.sin(lng / 30.0 * pi)) * 2.0 / 3.0
+        return ret
+
+    dlat, dlon = transformlat(gcj_lon - 105.0, gcj_lat - 35.0), transformlng(gcj_lon - 105.0, gcj_lat - 35.0)
+    radlat = gcj_lat / 180.0 * pi
+    magic = 1 - ee * math.sin(radlat) * math.sin(radlat)
+    sqrtmagic = math.sqrt(magic)
+    dlat = (dlat * 180.0) / ((a * (1 - ee)) / (magic * sqrtmagic) * pi)
+    dlon = (dlon * 180.0) / (a / sqrtmagic * math.cos(radlat) * pi)
+    return gcj_lon - dlon, gcj_lat - dlat
 
 
 # ==========================================
@@ -78,8 +85,7 @@ st.markdown("<h2>历史街区交通枢纽与商业活力耦合分析</h2>", unsa
 # ==========================================
 @st.cache_data
 def load_data(filename):
-    if not os.path.exists(filename):
-        filename = "../" + filename
+    if not os.path.exists(filename): filename = "../" + filename
     return pd.read_csv(filename) if os.path.exists(filename) else None
 
 
@@ -94,16 +100,16 @@ df_poi = load_data("Changchun_POI_Real.csv")
 df_traffic = load_data("Changchun_Traffic_Real.csv")
 df_base = load_base_points()
 
-# 🌟 核心升级：强行让 POI 数据和 Traffic 数据具备相同的字段，完美适配雷达！
 if df_poi is not None and 'Type' in df_poi.columns:
-    df_poi['Category'] = df_poi['Type']  # 把 Type 映射成 Category
+    df_poi['Category'] = df_poi['Type']
+    df_poi['Name'] = df_poi.get('Name', '商业网点')
 
 if df_traffic is not None:
     def classify_and_color(row):
         text = str(row.get('Name', '')) + str(row.get('Type', ''))
         if '地铁' in text or '轻轨' in text:
             return pd.Series(['轻轨站或地铁站', [231, 76, 60, 220]])
-        elif '铁路' in text or '火车站' in text or '长春站' in text:
+        elif '铁路' in text or '站' in text:
             return pd.Series(['铁路及铁路站', [142, 68, 173, 220]])
         elif '公交' in text or '客运' in text:
             return pd.Series(['公交站', [46, 204, 113, 220]])
@@ -115,10 +121,56 @@ if df_traffic is not None:
 
     df_traffic[['Category', 'Color']] = df_traffic.apply(classify_and_color, axis=1)
 
+
+# 🚀 拟真：生成拥堵路口、断头路与人口潮汐数据 (已挂载坐标解密引擎)
+@st.cache_data
+def generate_dynamic_traffic():
+    # 原始百度坐标 (BD-09)
+    cong_bd_lngs = [125.360106, 125.355170, 125.346943]
+    cong_bd_lats = [43.908314, 43.915339, 43.912892]
+    # 批量解密为 WGS-84
+    cong_wgs = [bd09_to_wgs84(lon, lat) for lon, lat in zip(cong_bd_lngs, cong_bd_lats)]
+
+    df_cong = pd.DataFrame({
+        "Name": ["早市核心拥堵段", "铁道口车流瓶颈", "老旧小区出入口"],
+        "Lng": [p[0] for p in cong_wgs],
+        "Lat": [p[1] for p in cong_wgs],
+        "Congestion_Base": [85, 90, 65],
+        "Category": ["动态拥堵监控"] * 3
+    })
+
+    # 原始百度坐标 (BD-09)
+    dead_bd_lngs = [125.353000, 125.348000, 125.358000]
+    dead_bd_lats = [43.914000, 43.907000, 43.910000]
+    # 批量解密为 WGS-84
+    dead_wgs = [bd09_to_wgs84(lon, lat) for lon, lat in zip(dead_bd_lngs, dead_bd_lats)]
+
+    df_dead = pd.DataFrame({
+        "Name": ["铁路割裂断头路", "厂房围墙阻断", "违建侵占盲道"],
+        "Lng": [p[0] for p in dead_wgs],
+        "Lat": [p[1] for p in dead_wgs],
+        "Category": ["路网贯通靶点"] * 3
+    })
+
+    pop_df = pd.DataFrame({
+        "时间": range(24),
+        "商业/早市活力": [10, 5, 2, 5, 20, 80, 150, 200, 180, 120, 90, 80, 70, 60, 50, 40, 30, 20, 15, 10, 8, 5, 5, 10],
+        "居住区晚高峰": [50, 50, 40, 40, 60, 100, 80, 50, 40, 40, 40, 45, 50, 45, 40, 50, 80, 150, 180, 200, 150, 100,
+                         80, 60]
+    }).set_index("时间")
+    return df_cong, df_dead, pop_df
+
+
+df_cong, df_dead, df_pop = generate_dynamic_traffic()
+
 # ==========================================
-# 2. 侧边栏控制台 (新增微观 POI 开关)
+# 2. 侧边栏控制台
 # ==========================================
 with st.sidebar:
+    st.markdown("#### ⏳ 24H 动态潮汐推演")
+    current_hour = st.slider("滑动时间轴查看交通变化", 0, 23, 8, 1, format="%d:00")
+    st.markdown("---")
+
     st.markdown("#### 👁️ 视角控制")
     v_m = st.radio("模式", ["🦅 鸟瞰视角", "🗺️ 上帝视角", "🚶 漫游视角"], label_visibility="collapsed")
     st.markdown("---")
@@ -129,13 +181,13 @@ with st.sidebar:
         h_r = st.slider("蜂窝网格半径 (米)", 20, 150, 50, 10)
         e_s = st.slider("活力高度拉伸倍数", 0.5, 10.0, 3.0, 0.5)
 
-    # 🌟 核心升级：增加微观 POI 散点开关
     show_poi_raw = st.checkbox("🔍 透视微观商铺点 (显示名称)", value=False)
-
     st.markdown("---")
-    show_traffic = st.checkbox("🚥 开启交通枢纽脉冲点", value=True)
-    if show_traffic and df_traffic is not None:
-        t_r = st.slider("交通节点光晕半径", 5, 60, 15, 5)
+
+    st.markdown("#### 🚥 路网与交通层")
+    show_traffic = st.checkbox("🚌 交通枢纽脉冲点", value=True)
+    show_cong = st.checkbox("🔥 路口拥堵热力图", value=True)
+    show_dead = st.checkbox("🚧 断头路与修复靶点", value=True)
 
 # ==========================================
 # 3. 构建 3D 复合图层
@@ -146,76 +198,75 @@ v_pitch, v_bearing, v_zoom = params[v_m]
 
 layers_to_render = []
 
-# 图层 1：宏观蜂窝柱 (没有名字，只有高度)
 if df_poi is not None and show_hex:
-    layer_hex = pdk.Layer(
+    layers_to_render.append(pdk.Layer(
         "HexagonLayer", data=df_poi, get_position=["Lng", "Lat"], radius=h_r,
         elevation_scale=e_s, elevation_range=[0, 300], extruded=True, coverage=0.88,
-        wireframe=True, opacity=0.75, pickable=True,  # 降低一点透明度，方便看底下的点
+        wireframe=True, opacity=0.75, pickable=True,
         color_range=[[241, 238, 246, 180], [208, 209, 230, 180], [166, 189, 219, 180], [116, 169, 207, 180],
                      [43, 140, 190, 180], [4, 90, 141, 180]]
-    )
-    layers_to_render.append(layer_hex)
+    ))
 
-# 🌟 图层 2：微观商铺散点 (赛博朋克高亮版！)
 if df_poi is not None and show_poi_raw:
-    layer_poi_raw = pdk.Layer(
-        "ScatterplotLayer", data=df_poi, get_position=["Lng", "Lat"],
-        get_radius=12,  # 稍微放大一点点半径，增强存在感
-        get_fill_color=[255, 20, 147, 240],   # 🔴 极度显眼的荧光洋红 (Deep Pink)
-        get_line_color=[255, 255, 255, 255],  # ⚪ 纯白高亮描边，让点位更加锐利
+    layers_to_render.append(pdk.Layer(
+        "ScatterplotLayer", data=df_poi, get_position=["Lng", "Lat"], get_radius=12,
+        get_fill_color=[255, 20, 147, 240], get_line_color=[255, 255, 255, 255],
         lineWidthMinPixels=2, pickable=True, auto_highlight=True
-    )
-    layers_to_render.append(layer_poi_raw)
+    ))
 
-# 图层 3：交通脉冲点
 if df_traffic is not None and show_traffic:
-    layer_traffic = pdk.Layer(
-        "ScatterplotLayer", data=df_traffic, get_position=["Lng", "Lat"], get_radius=t_r,
+    layers_to_render.append(pdk.Layer(
+        "ScatterplotLayer", data=df_traffic, get_position=["Lng", "Lat"], get_radius=15,
         get_fill_color="Color", get_line_color=[255, 255, 255, 200], lineWidthMinPixels=1, pickable=True,
         auto_highlight=True
-    )
-    layers_to_render.append(layer_traffic)
+    ))
+
+if show_cong:
+    time_multiplier = 1.5 if current_hour in [7, 8, 9, 17, 18, 19] else (0.3 if current_hour < 6 else 1.0)
+    df_cong["Dynamic_Weight"] = df_cong["Congestion_Base"] * time_multiplier
+    layers_to_render.append(
+        pdk.Layer("HeatmapLayer", data=df_cong, opacity=0.8, get_position=["Lng", "Lat"], get_weight="Dynamic_Weight",
+                  radiusPixels=70))
+
+if show_dead:
+    layers_to_render.append(pdk.Layer(
+        "ScatterplotLayer", data=df_dead, get_position=["Lng", "Lat"], get_radius=30,
+        get_fill_color=[241, 196, 15, 255], get_line_color=[255, 255, 255, 200], lineWidthMinPixels=3, stroked=True,
+        pickable=True
+    ))
 
 # ==========================================
-# 4. 🚀 大一统雷达探针 (完全兼容三种图层)
+# 4. 渲染雷达与分析面板
 # ==========================================
 radar_tooltip = {
-    "html": """
-    <div style="font-family: 'Helvetica Neue', Arial, sans-serif; padding: 5px;">
-        <h4 style="margin: 0 0 8px 0; color: #2c3e50; font-size: 14px;">📡 空间雷达探针扫描</h4>
-        <div style="font-size: 13px; line-height: 1.6; color: #34495e;">
-            <span style="color: #7f8c8d;">节点名称 (Name)：</span><b>{Name}</b><br/>
-            <span style="color: #7f8c8d;">节点业态 (Category)：</span><b style="color: #8e44ad;">{Category}</b><br/>
-            <span style="color: #7f8c8d;">密度聚合量 (Density)：</span><b style="color: #e74c3c; font-size: 16px;">{elevationValue}</b>
-        </div>
-    </div>
-    """,
-    "style": {"backgroundColor": "rgba(255, 255, 255, 0.95)", "border": "1px solid #bdc3c7", "borderRadius": "8px"}
+    "html": "<b>{Name}</b><br/>分类: <span style='color: #e74c3c;'>{Category}</span><br/>(部分图层聚合值为: {elevationValue})",
+    "style": {"backgroundColor": "rgba(255, 255, 255, 0.95)", "color": "#2c3e50", "borderRadius": "8px"}
 }
 
-if not layers_to_render:
-    st.info("💡 请在左侧边栏至少开启一个数据图层。")
-else:
-    map_col, data_col = st.columns([4, 1])
+map_col, data_col = st.columns([4, 1.2])
 
-    with map_col:
-        r = pdk.Deck(layers=layers_to_render,
-                     initial_view_state=pdk.ViewState(longitude=c_lng, latitude=c_lat, zoom=v_zoom, pitch=v_pitch,
-                                                      bearing=v_bearing), map_style="light", tooltip=radar_tooltip)
-        st.pydeck_chart(r, use_container_width=True)
+with map_col:
+    r = pdk.Deck(layers=layers_to_render,
+                 initial_view_state=pdk.ViewState(longitude=c_lng, latitude=c_lat, zoom=v_zoom, pitch=v_pitch,
+                                                  bearing=v_bearing), map_style="light", tooltip=radar_tooltip)
+    st.pydeck_chart(r, use_container_width=True)
 
-    with data_col:
-        st.markdown("### 📊 空间特征洞察")
-        st.markdown("---")
-        if df_traffic is not None and df_poi is not None:
-            counts = df_traffic['Category'].value_counts()
-            with st.container(): st.metric("🛍️ 活跃商业 POI", f"{len(df_poi)} 个", "活力底座")
-            st.markdown("<br>", unsafe_allow_html=True)
-            with st.container(): st.metric("🚌 公交网络节点", f"{counts.get('公交站', 0)} 个", "高频覆盖")
-            st.markdown("<br>", unsafe_allow_html=True)
-            with st.container(): st.metric("🚇 轨交/铁路枢纽",
-                                           f"{counts.get('轻轨站或地铁站', 0) + counts.get('铁路及铁路站', 0)} 个",
-                                           "城市大动脉")
-            st.markdown("<br>", unsafe_allow_html=True)
-            with st.container(): st.metric("🅿️ 静态停车设施", f"{counts.get('停车场', 0)} 个", "机动车承载力")
+with data_col:
+    st.markdown("### 📊 基础设施洞察")
+    if df_traffic is not None and df_poi is not None:
+        counts = df_traffic['Category'].value_counts()
+        c1, c2 = st.columns(2)
+        c1.metric("🛍️ 商业 POI", f"{len(df_poi)}")
+        c2.metric("🚌 公交节点", f"{counts.get('公交站', 0)}")
+
+    st.markdown("---")
+    st.markdown(f"#### 📈 24H 人口潮汐 ({current_hour}:00)")
+    st.line_chart(df_pop, use_container_width=True, height=200)
+
+    st.markdown("#### 🧠 诊断与对策")
+    if 7 <= current_hour <= 9:
+        st.error("🚨 早高峰预警：早市/枢纽区域拥堵。建议优先贯通【铁路割裂断头路】，分散过境车流。")
+    elif 17 <= current_hour <= 20:
+        st.warning("⚠️ 晚高峰预警：居住区承载受限。建议结合【废弃厂房/边角地】置换为立体停车设施。")
+    else:
+        st.success("✅ 流量平稳：建议在此基础流态下，重点推进微观空间路权恢复及慢行系统优化。")

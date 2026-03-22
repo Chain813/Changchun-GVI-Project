@@ -13,7 +13,7 @@ model = models.segmentation.deeplabv3_resnet50(weights=weights).to(device).eval(
 
 print(f"⚡ 模型已加载至运算设备: {device.type.upper()}")
 
-# 图像张量化预处理
+# 图像张量化预处理 (保持你极其标准的写法)
 preprocess = transforms.Compose([
     transforms.Resize((512, 1024)),
     transforms.ToTensor(),
@@ -31,7 +31,7 @@ def evaluate_gvi(image_path):
     # 提取像素级特征矩阵
     mask = torch.argmax(output, dim=1).squeeze().cpu().numpy()
     
-    # 💡 批注：默认 COCO 权重下，potted plant (盆栽植物) 通常是 class 16
+    # 💡 教官批注：默认 COCO 权重下，potted plant (盆栽植物) 通常是 class 16
     # 为了演示系统的完整闭环，我们暂时用你原来的 `mask > 0` 逻辑，
     # 或者用 `mask == 16` 来模拟提取。这里为了确保有数据返回，沿用你的宽松测度逻辑。
     green_pixels = np.sum((mask > 0)) 

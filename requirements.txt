@@ -3,3 +3,9 @@ pandas
 pydeck
 openpyxl
 requests
+plotly
+pillow
+torch
+torchvision
+transformers
+numpy

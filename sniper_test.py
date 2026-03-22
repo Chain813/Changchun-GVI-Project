@@ -1,7 +1,7 @@
 import requests
 import json
 
-AK = "你的ak"
+AK = "W7iTpEM9P3wGO0kuft1fZhdM6YMB9ADr"
 
 # 🎯 随便填一个你认为“绝对有街景”的经纬度 (从你的 Excel 里挑一个没抓到图的点)
 lng = 125.3411073   # 替换成测试点的 Lng
